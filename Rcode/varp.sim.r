@@ -15,7 +15,7 @@ varp.sim <- function(phi.array,innovar.matrix,T.sim)
   x.init <- t(chol(gamma.0)) %*% rnorm(2)
   x.next <- x.init
   x.sim <- NULL
-  for(t in 1:T)
+  for(t in 1:T.sim)
   {
     x.next <- phi.matrix %*% x.next + rnorm(2)
     x.sim <- cbind(x.sim,x.next)
