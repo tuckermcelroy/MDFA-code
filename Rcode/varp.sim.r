@@ -31,7 +31,8 @@ varp.sim <- function(phi.array,innovar.matrix,T.sim)
   x.sim <- NULL
   for(t in 1:T.sim)
   {
-    x.next <- comp.matrix %*% x.next + matrix(c(1,rep(0,p-1)) %x% rnorm(n),ncol=1)
+    x.next <- comp.matrix %*% x.next + matrix(c(1,rep(0,p-1)) %x% 
+                    t(chol(innovar.matrix)) %*% rnorm(n),ncol=1)
     x.sim <- cbind(x.sim,x.next[1:n])
   }
   x.sim <- ts(t(x.sim))
