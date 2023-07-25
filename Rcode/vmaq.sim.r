@@ -14,7 +14,7 @@ vmaq.sim <- function(theta.array,innovar.matrix,T.sim)
   theta.matrix <- matrix(theta.array,nrow=n)
   
   eps.init <- NULL
-  for(j in 1:q)
+  for(j in 1:(q+1))
   {
     eps.init <- rbind(eps.init,t(chol(innovar.matrix)) %*% rnorm(n))
   }
@@ -22,8 +22,9 @@ vmaq.sim <- function(theta.array,innovar.matrix,T.sim)
   x.sim <- NULL
   for(t in 1:T.sim)
   {
-    x.next <- rnorm(n) + theta.matrix %*% eps.next
-    eps.next <- rbind(t(chol(innovar.matrix)) %*% rnorm(n),eps.next[1:(n*q-n)])
+    x.next <- cbind(diag(n), theta.matrix) %*% eps.next
+    eps.next <- rbind(t(chol(innovar.matrix)) %*% rnorm(n),eps.next)
+    eps.next <- matrix(eps.next[1:(n*(q+1))],ncol=1)
     x.sim <- cbind(x.sim,x.next)
   }
   x.sim <- ts(t(x.sim))
