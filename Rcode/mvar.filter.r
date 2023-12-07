@@ -9,8 +9,6 @@ mvar.filter <- function(data.ts,psi.filter)
   #   data.ts is T x N time series
   #		psi.filter is array N x N x L of real entries,
   #			corresponding to filter coefficients of index
-  #			-shift,...,L-1-shift, where shift gives the integer offset;
-  #      shift=0 for a causal filter
   #	outputs:
   #		out.ts is array (T-L+1) x N output series
   #
