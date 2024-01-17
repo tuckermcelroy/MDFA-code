@@ -25,7 +25,7 @@ mdfa.getquotient <- function(frf.psi,rootfreqs,rem.vec)
   #     of Psi^{star} (z), starting with constant coefficient.
   #	outputs:
   #		frf.psi.sharp is array N x N x Grid of complex entries, the  
-  #			frequency response function Psi^sharp}(e^{-i lambda})
+  #			frequency response function Psi^{sharp}(e^{-i lambda})
   #			for lambda given by Grid number of Fourier frequencies 
   #
   #######################################################
