@@ -1,4 +1,4 @@
-mdfa.cointfilter <- function(frf,spec,q)
+mdfa.cointfilter <- function(frf,spec,q,deltad)
 {
   
   #######################################################
@@ -20,6 +20,7 @@ mdfa.cointfilter <- function(frf,spec,q)
   #     where f_zz is rxr for the noise-differenced co-integrated process Z_t,
   #     and f_xx is NxN for the fully-differenced process X_t
   #   q is length of moving average filter
+  #   deltad is final coefficient of Delta(L)
   #	outputs:
   #		opt.array is array N x N x q of filter coefficients
   #		opt.val is N x N matrix corresponding to minimal MSE
@@ -36,17 +37,17 @@ mdfa.cointfilter <- function(frf,spec,q)
 
   lambda.ft <- exp(-1i*2*pi*grid^{-1}*(seq(1,grid) - (m+1)))	## this is e^{-i lambda}
   fpsi <- do.call(cbind,lapply(seq(1,grid),function(i) frf[,,i] %*% spec.xz[,,i]))
-  fpsi <- -1*grid^{-1}*fpsi %*% (rep(1,grid) %x% diag(r))
+  fpsi <- -1*grid^{-1}*deltad^{-1}*fpsi %*% (rep(1,grid) %x% diag(r))
   opt.val <- do.call(cbind,lapply(seq(1,grid),function(i) frf[,,i] %*% 
                       spec.xx[,,i] %*% Conj(t(frf[,,i]))))
-  opt.val <- grid^{-1}*opt.val %*% (rep(1,grid) %x% diag(N))
+  opt.val <- grid^{-1}*deltad^{-2}*opt.val %*% (rep(1,grid) %x% diag(N))
   fzzmat <- grid^{-1}*matrix(spec.zz,nrow=r) %*% (lambda.ft^{0} %x% diag(r))
   for(k in 0:(q-1))
   {
     fpsi.new <- do.call(cbind,lapply(seq(1,grid),function(i) frf[,,i] %*% spec.xx[,,i]))
-    fpsi.new <- grid^{-1}*fpsi.new %*% (lambda.ft^{-k} %x% diag(N))
+    fpsi.new <- grid^{-1}*deltad^{-2}*fpsi.new %*% (lambda.ft^{-k} %x% diag(N))
     fpsi <- cbind(fpsi,fpsi.new)
-    fxxmat.new <- grid^{-1}*matrix(spec.xx,nrow=N) %*% (lambda.ft^{-k} %x% diag(N))
+    fxxmat.new <- grid^{-1}*deltad^{-2}*matrix(spec.xx,nrow=N) %*% (lambda.ft^{-k} %x% diag(N))
     if(k==0) { 
       fxxmat <- fxxmat.new 
       fxxzero <- fxxmat.new
@@ -60,7 +61,7 @@ mdfa.cointfilter <- function(frf,spec,q)
         fxxmat <- rbind(fxxmat,cbind(t(fxxmat.new),t(sidexx.mat),fxxzero))
       }
     }
-    fxzmat.new <- -1*grid^{-1}*matrix(spec.xz,nrow=N) %*% (lambda.ft^{k} %x% diag(r))
+    fxzmat.new <- -1*grid^{-1}*deltad^{-1}*matrix(spec.xz,nrow=N) %*% (lambda.ft^{k} %x% diag(r))
     if(k==0) { 
       fxzmat <- fxzmat.new 
     } else { fxzmat <- rbind(fxzmat,fxzmat.new) }
@@ -72,7 +73,7 @@ mdfa.cointfilter <- function(frf,spec,q)
   
   opt <- solve(fmat) %*% t(fpsi)
   opt.val <- Re(opt.val) - fpsi %*% solve(fmat) %*% t(fpsi)
-  alpha <- opt[1:r,,drop=FALSE]
+  alpha <- opt[seq(1,r),,drop=FALSE]
   opt <- opt[-seq(1,r),]
   opt.array <- array(t(opt),c(N,N,q))
   
