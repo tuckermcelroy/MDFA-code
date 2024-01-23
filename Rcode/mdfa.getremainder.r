@@ -48,7 +48,7 @@ mdfa.getremainder <- function(frf,rootfreqs)
       j.star <- floor(sig.lambdas[k]*grid/2) + m+1
       if(j.star==(grid+1)) j.star <- 1
       sig.vec.new <- frf[,,j.star]  
-      sig.vec <- rbind(sig.vec,t(sig.vec.new))
+      sig.vec <- rbind(sig.vec,sig.vec.new)
       if(sig.mults[k]==2)
       {
         if(j.star==grid) 
@@ -60,7 +60,7 @@ mdfa.getremainder <- function(frf,rootfreqs)
           sig.vec.new <- 1i*exp(1i*sig.lambdas[k]*pi)*
             (frf[,,j.star+1]-frf[,,j.star])*grid/(2*pi) 
         }
-        sig.vec <- rbind(sig.vec,t(sig.vec.new))
+        sig.vec <- rbind(sig.vec,sig.vec.new)
       }
     } 
   }
