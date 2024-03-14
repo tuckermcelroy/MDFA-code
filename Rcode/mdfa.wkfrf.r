@@ -19,6 +19,7 @@ mdfa.wkfrf <- function(delta.noise,delta.signal,spec.noise,spec.signal)
   # Requires: getGCD  [in MDFA code, this GCD handles complex matrices]
   ###########################################################################
   
+  thresh <- 10e-8
   d.noise <- dim(delta.noise)[3] - 1
   d.signal <- dim(delta.signal)[3] - 1
   N <- dim(spec.noise)[1]
@@ -53,7 +54,9 @@ mdfa.wkfrf <- function(delta.noise,delta.signal,spec.noise,spec.signal)
     spec.data.del[,,k] <- spec.noise.del[,,k] + spec.signal.del[,,k]
     if( sum(Mod(frf.noise[,,k])) == 0 )
     {
-      spec.rank <- qr(spec.noise[,,k])$rank
+#      spec.rank <- qr(spec.noise[,,k])$rank
+#      gcd.out <- getGCD(spec.noise[,,k],spec.rank)
+      spec.rank <- sum(getGCD(spec.noise[,,k],N)[[2]] > thresh)
       gcd.out <- getGCD(spec.noise[,,k],spec.rank)
       spec.chol <- gcd.out[[1]] %*% diag(sqrt(gcd.out[[2]]),ncol=spec.rank)
       spec.sig.inv <- solve(spec.signal[,,k])
@@ -66,7 +69,9 @@ mdfa.wkfrf <- function(delta.noise,delta.signal,spec.noise,spec.signal)
         frf.wk[,,k] <- spec.signal.del[,,k] %*% solve(spec.data.del[,,k])
       } else
       {
-        spec.rank <- qr(spec.signal[,,k])$rank
+#        spec.rank <- qr(spec.signal[,,k])$rank
+#        gcd.out <- getGCD(spec.signal[,,k],spec.rank)
+        spec.rank <- sum(getGCD(spec.signal[,,k],N)[[2]] > thresh)
         gcd.out <- getGCD(spec.signal[,,k],spec.rank)
         spec.chol <- gcd.out[[1]] %*% diag(sqrt(gcd.out[[2]]),ncol=spec.rank)
         spec.noise.inv <- solve(spec.noise[,,k])

@@ -1,4 +1,4 @@
-mdfa.getquotient <- function(frf,rootfreqs,rem.vec)
+mdfa.getquotient2 <- function(frf,rootfreqs,rem.vec)
 {
   
   #######################################################
@@ -59,7 +59,7 @@ mdfa.getquotient <- function(frf,rootfreqs,rem.vec)
   grid <- dim(frf)[3]
   m <- floor(grid/2)
   d <- length(rootfreqs)
-  
+
   root.ceps <- Re(roots2ceps(exp(-1i*pi*rootfreqs),length(rootfreqs)))
   delta <- ceps2wold(root.ceps,length(rootfreqs))
   delta <- delta/delta[d+1]
@@ -111,17 +111,17 @@ mdfa.getquotient <- function(frf,rootfreqs,rem.vec)
           sigstar.vec.new <- (frf.star[,,1]-2*frf.star[,,j.star]+frf.star[,,j.star-1])*(grid/(2*pi))^2 
           sigdelta.vec.new <- (frf.delta[,,1]-2*frf.delta[,,j.star]+frf.delta[,,j.star-1])*(grid/(2*pi))^2 
         } else 
-          if(j.star==1)
-          {
-            sig.vec.new <- (frf[,,j.star+1]-2*frf[,,j.star]+frf[,,grid])*(grid/(2*pi))^2 
-            sigstar.vec.new <- (frf.star[,,j.star+1]-2*frf.star[,,j.star]+frf.star[,,grid])*(grid/(2*pi))^2 
-            sigdelta.vec.new <- (frf.delta[,,j.star+1]-2*frf.delta[,,j.star]+frf.delta[,,grid])*(grid/(2*pi))^2 
-          } else
-          { 
-            sig.vec.new <- (frf[,,j.star+1]-2*frf[,,j.star]+frf[,,j.star-1])*(grid/(2*pi))^2 
-            sigstar.vec.new <- (frf.star[,,j.star+1]-2*frf.star[,,j.star]+frf.star[,,j.star-1])*(grid/(2*pi))^2 
-            sigdelta.vec.new <- (frf.delta[,,j.star+1]-2*frf.delta[,,j.star]+frf.delta[,,j.star-1])*(grid/(2*pi))^2 
-          }
+        if(j.star==1)
+        {
+          sig.vec.new <- (frf[,,j.star+1]-2*frf[,,j.star]+frf[,,grid])*(grid/(2*pi))^2 
+          sigstar.vec.new <- (frf.star[,,j.star+1]-2*frf.star[,,j.star]+frf.star[,,grid])*(grid/(2*pi))^2 
+          sigdelta.vec.new <- (frf.delta[,,j.star+1]-2*frf.delta[,,j.star]+frf.delta[,,grid])*(grid/(2*pi))^2 
+        } else
+        { 
+          sig.vec.new <- (frf[,,j.star+1]-2*frf[,,j.star]+frf[,,j.star-1])*(grid/(2*pi))^2 
+          sigstar.vec.new <- (frf.star[,,j.star+1]-2*frf.star[,,j.star]+frf.star[,,j.star-1])*(grid/(2*pi))^2 
+          sigdelta.vec.new <- (frf.delta[,,j.star+1]-2*frf.delta[,,j.star]+frf.delta[,,j.star-1])*(grid/(2*pi))^2 
+        }
         sig.vec <- rbind(sig.vec,sig.vec.new)        
         sigstar.vec <- rbind(sigstar.vec,sigstar.vec.new)
         sigdelta.vec <- rbind(sigdelta.vec,sigdelta.vec.new)
@@ -129,7 +129,7 @@ mdfa.getquotient <- function(frf,rootfreqs,rem.vec)
     } 
   }
   
-  frf.psi.sharp <- frf - frf.star
+  frf.psi.sharp <- frf.psi - frf.star
   for(j in 1:grid)
   {
     if(!is.element(j,j.stars)) 
