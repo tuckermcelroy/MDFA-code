@@ -22,6 +22,7 @@ mdfa.cointfilter <- function(frf,spec,q,deltad)
   #   q is length of moving average filter
   #   deltad is final coefficient of Delta(L)
   #	outputs:
+  #   alpha is N x r matrix
   #		opt.array is array N x N x q of filter coefficients
   #		opt.val is N x N matrix corresponding to minimal MSE
   #
