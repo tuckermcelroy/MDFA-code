@@ -20,6 +20,7 @@ mdfa.whfrf <- function(delta.noise,delta.signal,spec.noise,spec.signal,len)
   #########################################
   
   trunc <- 500
+  thresh <- 10^(-8)
   array_combine <- function(a_array,b_array,inv=FALSE)
   {
     N <- dim(a_array)[1]
@@ -88,6 +89,8 @@ mdfa.whfrf <- function(delta.noise,delta.signal,spec.noise,spec.signal,len)
       {
 #        spec.rank <- qr(spec.signal[,,k])$rank
 #        gcd.out <- getGCD(spec.signal[,,k],spec.rank)
+        spec.rank <- sum(getGCD(spec.signal[,,k],N)[[2]] > thresh)
+        gcd.out <- getGCD(spec.signal[,,k],spec.rank)
         spec.chol <- gcd.out[[1]] %*% diag(sqrt(gcd.out[[2]]),ncol=spec.rank)
         spec.noise.inv <- solve(spec.noise[,,k])
         frf.wk[,,k] <- spec.chol %*% solve( as.matrix(t(Conj(spec.chol)) %*% 
