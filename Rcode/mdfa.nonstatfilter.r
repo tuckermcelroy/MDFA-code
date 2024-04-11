@@ -5,7 +5,7 @@ mdfa.nonstatfilter <- function(dpoly,rem.vec,filter.sharp)
   #
   #	mdfa.nonstatfilter by Tucker McElroy
   #
-  # computes R and Q constraint matrices for a non-stationary process
+  # computes MDFA filter for a non-stationary process
   #	inputs:
   #   dpoly is the differencing polynomial
   #   rem.vec: block column vector of d real matrices, 
