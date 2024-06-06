@@ -7,7 +7,8 @@ mdfa.atsfilter <- function(frf,spec,lambda,eta,mu,q)
   #
   #	computes optimal concurrent moving average filter
   #		as approx of given target filter, using I-ATS MDFA method,
-  #		based upon the moving average filter class of length q
+  #		based upon the moving average filter class of length q.
+  #   This code is applied univariately, to each of N series.
   #	inputs:
   #		frf is array N x N x Grid of complex entries, the target
   #			frequency response function Psi(e^{-i lambda})
@@ -24,42 +25,48 @@ mdfa.atsfilter <- function(frf,spec,lambda,eta,mu,q)
   #
   ##############################################################
   
-  ## first code up N=1 case...
-  
   N <- dim(spec)[1]
   grid <- dim(frf)[3]
   m <- floor(grid/2)
   lambda.ft <- exp(-1i*2*pi*grid^{-1}*(seq(1,grid) - (m+1)))	## this is e^{-i lambda}
   
-  W.fcn <- list()
-  scaling <- list()
+  opts <- list()
+  opt.vals <- list()
   for(i in 1:N)
   {
-    W.fcn[[i]] <- (1 + pmax(0,abs(2*pi*grid^{-1}*(seq(1,grid) - (m+1))) - mu))^eta[i]
-    Amp.frf <- abs(frf[i,i,,drop=FALSE])
-    Phase.frf <- -Arg(frf[i,i,,drop=FALSE])
-    scaling[[i]] <- sqrt(1 + 4*lambda[i]*Amp.frf^2)
-  }
-
-  
-  fpsi <- NULL
-  fmat <- NULL
-  g.fcn <- list()
-#  opt.val <- do.call(cbind,lapply(seq(1,grid),function(i) frf[,,i] %*% spec[,,i] %*% Conj(t(frf[,,i]))))
-#  opt.val <- grid^{-1}*opt.val %*% (rep(1,grid) %x% diag(N))
-  for(k in 0:(q-1))
-  {
-    g.piece <- exp(-1i*Phase.frf)*lambda.ft^k
-    g.fcn[[k+1]] <- Re(g.piece) + 1i*scaling*Im(g.piece)
+    W.fcn <- (1 + pmax(0,abs(2*pi*grid^{-1}*(seq(1,grid) - (m+1))) - mu))^eta[i]
+    Amp.frf <- abs(frf[i,i,])
+    Phase.frf <- -Arg(frf[i,i,])
+    scaling <- sqrt(1 + 4*lambda[i]*Amp.frf^2)
     
-    
-  }
-  fpsi <- Re(fpsi)
-  fmat <- Re(fmat)
+    g.fcn <- NULL
+    opt.val <- mean(W.fcn*Amp.frf^2*spec[i,i,])
+    for(k in 0:(q-1))
+    {
+      g.piece <- exp(-1i*Phase.frf)*lambda.ft^k
+      g.fcn <- rbind(g.fcn,Re(g.piece) + 1i*scaling*Im(g.piece))
+    }
 
-  opt <- solve(fmat,fpsi)
+    fpsi <- matrix(0,nrow=q,ncol=1)
+    fmat <- matrix(0,nrow=q,ncol=q)
+    for(j in 0:(q-1))
+    {
+      fpsi[(j+1),1] <- mean(g.fcn[j+1,]*W.fcn*Amp.frf*spec[i,i,])
+      for(k in 0:(q-1))
+      {
+        fmat[(j+1),(k+1)] <- mean(g.fcn[j+1,]*Conj(g.fcn[k+1,])*W.fcn)
+      }
+    }
+    fpsi <- Re(fpsi)
+    fmat <- Re(fmat)
+    opt <- solve(fmat,fpsi)
+    opt.val <- opt.val - t(fpsi) %*% opt
   
+    opts[[i]] <- opt
+    opt.vals[[i]] <- opt.val
+  }
   
+  return(list(opts,opt.vals))
 }
 
 
