@@ -40,7 +40,7 @@ mdfa.atsfilter <- function(frf,spec,lambda,eta,mu,q)
     scaling <- sqrt(1 + 4*lambda[i]*Amp.frf^2)
     
     g.fcn <- NULL
-    opt.val <- mean(W.fcn*Amp.frf^2*spec[i,i,])
+    opt.val <- Re(mean(W.fcn*Amp.frf^2*spec[i,i,]))
     for(k in 0:(q-1))
     {
       g.piece <- exp(-1i*Phase.frf)*lambda.ft^k
