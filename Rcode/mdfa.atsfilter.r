@@ -20,8 +20,8 @@ mdfa.atsfilter <- function(frf,spec,lambda,eta,mu,q)
   #   mu is a scalar in (0,pi) that gives cutoff for stop-band  
   #   q integer order of MDFA moving average filter
   #	outputs:
-  #		opt.array is array N x N x q of filter coefficients
-  #		opt.val is N x N matrix corresponding to minimal MSE
+  #		opts is list of N univariate length q  filter coefficients
+  #		opt.vals is list of N scalars corresponding to minimal MSE
   #
   ##############################################################
   
@@ -54,7 +54,7 @@ mdfa.atsfilter <- function(frf,spec,lambda,eta,mu,q)
       fpsi[(j+1),1] <- mean(g.fcn[j+1,]*W.fcn*Amp.frf*spec[i,i,])
       for(k in 0:(q-1))
       {
-        fmat[(j+1),(k+1)] <- mean(g.fcn[j+1,]*Conj(g.fcn[k+1,])*W.fcn)
+        fmat[(j+1),(k+1)] <- mean(g.fcn[j+1,]*Conj(g.fcn[k+1,])*W.fcn*spec[i,i,])
       }
     }
     fpsi <- Re(fpsi)
