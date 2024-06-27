@@ -40,19 +40,19 @@ mdfa.getats <- function(frf.psi,frf.hat,spec,mu)
   {
     psi.amp <- abs(frf.psi[i,i,])
     psi.phase <- -Arg(frf.psi[i,i,])
-    hat.amp <- abs(hat.psi[i,i,])
-    hat.phase <- -Arg(hat.psi[i,i,])
+    hat.amp <- abs(frf.hat[i,i,])
+    hat.phase <- -Arg(frf.hat[i,i,])
     psi.amps <- cbind(psi.amps,psi.amp)
     psi.phases <- cbind(psi.phases,psi.phase)
     hat.amps <- cbind(hat.amps,hat.amp)
     hat.phases <- cbind(hat.phases,hat.phase)
     
-    accur <-  mean((psi.amp - hat.amp)^2*pass.frf*spec[i,i,])
-    timely <- 4*mean(psi.amp*hat.amp*(sin((psi.phase - hat.phase)/2))^2*
-                         pass.frf*spec[i,i,])
-    smooth <-  mean((psi.amp - hat.amp)^2*stop.frf*spec[i,i,])
-    resi <- 4*mean(psi.amp*hat.amp*(sin((psi.phase - hat.phase)/2))^2*
-                       stop.frf*spec[i,i,])
+    accur <-  Re(mean((psi.amp - hat.amp)^2*pass.frf*spec[i,i,]))
+    timely <- Re(4*mean(psi.amp*hat.amp*(sin((psi.phase - hat.phase)/2))^2*
+                         pass.frf*spec[i,i,]))
+    smooth <-  Re(mean((psi.amp - hat.amp)^2*stop.frf*spec[i,i,]))
+    resi <- Re(4*mean(psi.amp*hat.amp*(sin((psi.phase - hat.phase)/2))^2*
+                       stop.frf*spec[i,i,]))
     ats <- cbind(ats,c(accur,timely,smooth,resi))
   }
   
