@@ -36,34 +36,34 @@ mdfa.imdfafilter <- function(frf,spec,lambda,eta,mu,q)
   {
     W.fcn <- (1 + pmax(0,abs(2*pi*grid^{-1}*(seq(1,grid) - (m+1))) - mu))^eta[n]
     opt.val <- do.call(cbind,lapply(seq(1,grid),
-                            function(i) frf[n,,i,drop=FALSE] %*% spec[,,i] %*% 
-                                        Conj(t(frf[n,,i,drop=FALSE]))))
-	  opt.val <- grid^{-1}*opt.val %*% (W.fcn %x% diag(N))
+                            function(i) matrix(frf[n,,i],nrow=1) %*% spec[,,i] %*% 
+                                        Conj(t(matrix(frf[n,,i],nrow=1)))))
+	  opt.val <- grid^{-1}*opt.val %*% W.fcn 
 		fpsi <- NULL
 	  fmat <- NULL
 	  for(k in 1:q)
 	  {
 		  fpsi.new <- do.call(cbind,lapply(seq(1,grid),
-		                        function(i) frf[n,,i,drop=FALSE] %*% spec[,,i]))
- 		  fpsi.new <- grid^{-1}*fpsi.new %*% ((W.fcn*lambda.ft^{1-k}) %x% diag(N))
+		                        function(i) matrix(frf[n,,i],nrow=1) %*% spec[,,i]))
+ 		  fpsi.new <- grid^{-1}*fpsi.new %*% ((W.fcn * lambda.ft^{1-k}) %x% diag(N))
 		  fpsi <- cbind(fpsi,fpsi.new)
 		  fmat.col <- NULL
 		  for(j in 1:q)
 		  {
 		    fmat.new <- grid^{-1}*matrix(spec,nrow=N) %*% ((W.fcn * lambda.ft^{j-k}) %x% diag(N))
 		    spec.temp <- do.call(cbind,lapply(seq(1,grid),
-		                          function(i) t(spec[,,i]) %*% t(frf[n,,i,drop=FALSE]) %*% 
-		                                      frf[n,,i,drop=FALSE] %*% spec[,,i] ))
+		                          function(i) t(spec[,,i]) %*% t(matrix(frf[n,,i],nrow=1)) %*% 
+		                                      matrix(frf[n,,i],nrow=1) %*% spec[,,i] ))
 		    fmat.temp <- grid^{-1}*spec.temp %*% ((W.fcn * lambda.ft^{-j-k}) %x% diag(N))
 		    fmat.new <- fmat.new - lambda[n]*fmat.temp
 		    spec.temp <- do.call(cbind,lapply(seq(1,grid),
-		                                      function(i) spec[,,i] %*% Conj(t(frf[n,,i,drop=FALSE])) %*% 
-		                                        Conj(frf[n,,i,drop=FALSE]) %*% t(spec[,,i]) ))
+		                          function(i) spec[,,i] %*% Conj(t(matrix(frf[n,,i],nrow=1))) %*% 
+		                                      Conj(matrix(frf[n,,i],nrow=1)) %*% t(spec[,,i]) ))
 		    fmat.temp <- grid^{-1}*spec.temp %*% ((W.fcn * lambda.ft^{j+k}) %x% diag(N))
 		    fmat.new <- fmat.new - lambda[n]*fmat.temp
 		    spec.temp <- do.call(cbind,lapply(seq(1,grid),
-		                                      function(i) spec[,,i] %*% Conj(t(frf[n,,i,drop=FALSE])) %*% 
-		                                        frf[n,,i,drop=FALSE] %*% spec[,,i] ))
+		                          function(i) spec[,,i] %*% Conj(t(matrix(frf[n,,i],nrow=1))) %*% 
+		                                      matrix(frf[n,,i],nrow=1) %*% spec[,,i] ))
 		    fmat.temp <- grid^{-1}*spec.temp %*% ((W.fcn * lambda.ft^{j-k}) %x% diag(N))
 		    fmat.new <- fmat.new + 2*lambda[n]*fmat.temp
 		    fmat.col <- rbind(fmat.col,fmat.new)
@@ -72,8 +72,8 @@ mdfa.imdfafilter <- function(frf,spec,lambda,eta,mu,q)
 	  }  
 		fpsi <- Re(fpsi)
     fmat <- Re(fmat)
-    opt <- solve(fmat,fpsi)
-    opt.val <- opt.val - t(fpsi) %*% opt
+    opt <- solve(fmat,t(fpsi))
+    opt.val <- opt.val - fpsi %*% opt
   
     opts <- rbind(opts,opt)
     opt.vals <- c(opt.vals,opt.val)  
