@@ -78,8 +78,9 @@ mdfa.imdfafilter <- function(frf,spec,lambda,eta,mu,q)
     opts <- rbind(opts,t(opt))
     opt.vals <- c(opt.vals,opt.val)  
   }    
-    
-  return(list(opts,opt.vals))
+  opt.array <- array(opts,c(N,N,q))
+  
+  return(list(opt.array,opt.vals))
 }
 
 
