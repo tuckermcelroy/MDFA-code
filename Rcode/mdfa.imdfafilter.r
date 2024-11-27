@@ -73,9 +73,9 @@ mdfa.imdfafilter <- function(frf,spec,lambda,eta,mu,q)
 		fpsi <- Re(fpsi)
     fmat <- Re(fmat)
     opt <- solve(fmat,t(fpsi))
-    opt.val <- opt.val - fpsi %*% opt
+    opt.val <- Re(opt.val) - fpsi %*% opt
   
-    opts <- rbind(opts,opt)
+    opts <- rbind(opts,t(opt))
     opt.vals <- c(opt.vals,opt.val)  
   }    
     
