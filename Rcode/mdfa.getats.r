@@ -25,8 +25,8 @@ mdfa.getats <- function(frf.psi,frf.hat,spec,mu)
   N <- dim(frf.psi)[1]
   grid <- dim(frf.psi)[3]
   m <- floor(grid/2)
-  lambda.ft <- exp(-1i*2*pi*grid^{-1}*(seq(1,grid) - (m+1)))	## this is e^{-i lambda}
- 
+  freq.ft <- 2*pi*grid^{-1}*(seq(1,grid) - (m+1))
+  
   pass.frf <- rep(1,grid)
   pass.frf[abs(freq.ft) > mu] <- 0
   stop.frf <- 1 - pass.frf

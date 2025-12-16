@@ -29,12 +29,13 @@ mdfa.atsfilter2 <- function(frf,spec,lambda1,lambda2,eta,mu,q)
   N <- dim(spec)[1]
   grid <- dim(frf)[3]
   m <- floor(grid/2)
-  lambda.ft <- exp(-1i*2*pi*grid^{-1}*(seq(1,grid) - (m+1)))	## this is e^{-i lambda}
-  stop.fcn <- rep(0,grid)
-  stop.fcn[ceiling(grid*mu/pi):grid] <- 1
-  pass.fcn <- rep(0,grid)
-  pass.fcn[1:floor(grid*mu/pi)] <- 1
-  
+  freq.ft <- 2*pi*grid^{-1}*(seq(1,grid) - (m+1))
+  lambda.ft <- exp(-1i*freq.ft)	## this is e^{-i lambda}
+
+  pass.frf <- rep(1,grid)
+  pass.frf[abs(freq.ft) > mu] <- 0
+  stop.frf <- 1 - pass.frf
+
   opts <- NULL
   opt.vals <- NULL
   for(n in 1:N)
@@ -50,12 +51,12 @@ mdfa.atsfilter2 <- function(frf,spec,lambda1,lambda2,eta,mu,q)
       fmat.col <- NULL
       for(j in 1:q)
       {
-        fmat.new <- mean((1 + W.fcn * lambda2[n] * stop.fcn) * lambda.ft^{j-k} * spec[n,n,])
-        spec.temp <- mean((W.fcn * lambda1[n] * pass.fcn) * lambda.ft^{-j-k} * frf[n,n,]^2 * spec[n,n,])
+        fmat.new <- mean((1 + W.fcn * lambda2[n] * stop.frf) * lambda.ft^{j-k} * spec[n,n,])
+        spec.temp <- mean((W.fcn * lambda1[n] * pass.frf) * lambda.ft^{-j-k} * frf[n,n,]^2 * spec[n,n,])
         fmat.new <- fmat.new - spec.temp
-        spec.temp <- mean((W.fcn * lambda1[n] * pass.fcn) * lambda.ft^{j+k} * Conj(frf[n,n,])^2 * spec[n,n,])
+        spec.temp <- mean((W.fcn * lambda1[n] * pass.frf) * lambda.ft^{j+k} * Conj(frf[n,n,])^2 * spec[n,n,])
         fmat.new <- fmat.new - spec.temp
-        spec.temp <- mean((W.fcn * lambda1[n] * pass.fcn) * lambda.ft^{j-k} * Mod(frf[n,n,])^2 * spec[n,n,])
+        spec.temp <- mean((W.fcn * lambda1[n] * pass.frf) * lambda.ft^{j-k} * Mod(frf[n,n,])^2 * spec[n,n,])
         fmat.new <- fmat.new + 2*spec.temp
         fmat.col <- rbind(fmat.col,fmat.new)
       }
